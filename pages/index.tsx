@@ -1,8 +1,45 @@
-import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
+import type { NextPage } from "next"
+import Head from "next/head"
+import Image from "next/image"
+import Link from "next/link"
+import { useEffect, useState } from "react"
+import { withAuthPublic } from "utils/auth"
 
-const Home: NextPage = () => {
+interface PageProps {
+    user?: { accessToken: string }
+}
+
+const Home: NextPage<PageProps> = ({ user }) => {
+    const [data, setData] = useState<any>({})
+    useEffect(() => {
+        if (user !== null) {
+            console.log({ user })
+            fetch(`https://api.github.com/graphql`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${user?.accessToken}`,
+                },
+                body: JSON.stringify({
+                    query: `query {
+                        viewer {
+                            repositories(first:2, privacy: PRIVATE){
+                                nodes {
+                                    name
+                                    isPrivate
+                                }
+                            }
+                        }
+                    }
+                    
+                    `,
+                }),
+            })
+                .then((res) => res.json())
+                .then((data) => setData(data))
+                .catch((err) => console.error(err))
+        }
+    }, [user])
+
     return (
         <div>
             <Head>
@@ -15,31 +52,21 @@ const Home: NextPage = () => {
             </Head>
 
             <main>
-                <h1>
-                    Welcome to <a href="https://nextjs.org">Next.js!</a>
-                </h1>
-                <div></div>
+                {user ? (
+                    <div>
+                        <pre>{JSON.stringify(user, null, 2)}</pre>
+                        <pre>{JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                ) : (
+                    <div>
+                        <Link href="/api/auth/signin">Login with Github</Link>
+                    </div>
+                )}
             </main>
-
-            <footer>
-                <a
-                    href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Powered by{" "}
-                    <span>
-                        <Image
-                            src="/vercel.svg"
-                            alt="Vercel Logo"
-                            width={72}
-                            height={16}
-                        />
-                    </span>
-                </a>
-            </footer>
         </div>
-    );
-};
+    )
+}
 
-export default Home;
+export const getServerSideProps = withAuthPublic()
+
+export default Home
