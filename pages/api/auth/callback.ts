@@ -53,7 +53,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
         req.session.user = { ...profile.data.viewer, accessToken }
         await req.session.save()
-        res.redirect("/")
+
+        res.redirect(req.session.redirect || "/")
         return
     }
 
