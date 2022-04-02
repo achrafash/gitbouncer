@@ -34,7 +34,7 @@ export const withAuthPublic = (handler?: any) =>
         async ({ req, res, params }: any) => {
             if (!req.session.user && req.url !== "/") {
                 // Trigger authentication
-                res.setHeader("location", "/api/auth/signin")
+                res.setHeader("location", "/api/auth/login")
                 res.statusCode = 302
                 res.end()
                 return { props: {} }
