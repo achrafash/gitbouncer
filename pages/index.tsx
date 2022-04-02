@@ -1,47 +1,11 @@
 import type { NextPage } from "next"
 import Head from "next/head"
-import Image from "next/image"
 import Link from "next/link"
-import { useEffect, useState } from "react"
-import { withAuthPublic } from "utils/auth"
+import { GitHub as GitHubIcon } from "react-feather"
 
-interface PageProps {
-    user?: { accessToken: string }
-}
-
-const Home: NextPage<PageProps> = ({ user }) => {
-    const [data, setData] = useState<any>({})
-    useEffect(() => {
-        if (user !== null) {
-            console.log({ user })
-            fetch(`https://api.github.com/graphql`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${user?.accessToken}`,
-                },
-                body: JSON.stringify({
-                    query: `query {
-                        viewer {
-                            repositories(first:2, privacy: PRIVATE){
-                                nodes {
-                                    name
-                                    isPrivate
-                                }
-                            }
-                        }
-                    }
-                    
-                    `,
-                }),
-            })
-                .then((res) => res.json())
-                .then((data) => setData(data))
-                .catch((err) => console.error(err))
-        }
-    }, [user])
-
+const LandingPage: NextPage = () => {
     return (
-        <div>
+        <div className="min-h-screen bg-gray-900 text-gray-100">
             <Head>
                 <title>Create Next App</title>
                 <meta
@@ -50,23 +14,30 @@ const Home: NextPage<PageProps> = ({ user }) => {
                 />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-
             <main>
-                {user ? (
-                    <div>
-                        <pre>{JSON.stringify(user, null, 2)}</pre>
-                        <pre>{JSON.stringify(data, null, 2)}</pre>
+                <div className="max-w-xl mx-auto py-24 text-center flex flex-col items-center">
+                    <h1 className="text-4xl font-black mb-6">
+                        Shareable Link for your Private Repos
+                    </h1>
+                    <p className="text-gray-400 font-light">
+                        Don&apos;t want to make your repo public but you still
+                        want to share it with a group of people easily? We got
+                        you! Connect your Github account and create a shareable
+                        link to let people join your private repo.
+                    </p>
+
+                    <div className="mt-12">
+                        <Link href="/api/auth/login">
+                            <button className="bg-black text-white border border-gray-600 rounded py-2 px-8 flex items-center space-x-4">
+                                <GitHubIcon size={14} />
+                                <span>Login with Github</span>
+                            </button>
+                        </Link>
                     </div>
-                ) : (
-                    <div>
-                        <Link href="/api/auth/signin">Login with Github</Link>
-                    </div>
-                )}
+                </div>
             </main>
         </div>
     )
 }
 
-export const getServerSideProps = withAuthPublic()
-
-export default Home
+export default LandingPage
