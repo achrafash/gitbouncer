@@ -50,11 +50,14 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         const profile = await profileResponse.json()
 
         // TODO - save user info in the database
-
         req.session.user = { ...profile.data.viewer, accessToken }
         await req.session.save()
 
-        res.redirect(req.session.redirect || "/dashboard")
+        const redirect = req.session.redirect || "/dashboard"
+        req.session.redirect = undefined
+        await req.session.save()
+
+        res.redirect(redirect)
         return
     }
 

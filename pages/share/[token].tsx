@@ -15,7 +15,12 @@ const SharePage: NextPage<PageProps> = ({ user, repo }) => {
                 <h3 className="text-xl">
                     Join {repo.name} by {repo.owner}
                 </h3>
-                <Link href={`/api/auth/login?redirect=${repo.url}`}>
+                <Link
+                    passHref
+                    href={`/api/auth/login?redirect=${encodeURIComponent(
+                        repo.url
+                    )}`}
+                >
                     <button className="bg-black text-white border border-gray-600 rounded py-2 px-8 flex items-center space-x-4">
                         <GitHubIcon size={14} />
                         <span>Login with Github</span>
@@ -26,14 +31,16 @@ const SharePage: NextPage<PageProps> = ({ user, repo }) => {
     )
 }
 
-export const getServerSideProps = withAuthPublic(() => {
+export const getServerSideProps = withAuthPublic(({ params }) => {
+    const { token } = params
+    const repoUrl = Buffer.from(token, "base64").toString("ascii")
     return {
         props: {
             repo: {
                 id: 0,
                 name: "Wordle RL",
                 owner: "AchrafAsh",
-                url: "https://github.com/achrafash/wordle_rl",
+                url: repoUrl,
             },
         },
     }

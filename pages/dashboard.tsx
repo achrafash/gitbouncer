@@ -8,6 +8,7 @@ import {
     Lock as LockIcon,
     Copy as CopyIcon,
     Check as CheckIcon,
+    Search as SearchIcon,
 } from "react-feather"
 import { withAuthPublic } from "utils/auth"
 
@@ -19,6 +20,8 @@ interface PageProps {
         accessToken: string
     }
 }
+
+const PUBLIC_URI = process.env.NEXT_PUBLIC_URI
 
 const Home: NextPage<PageProps> = ({ user }) => {
     const [data, setData] = useState<any>({})
@@ -55,6 +58,7 @@ const Home: NextPage<PageProps> = ({ user }) => {
         {
             id: number
             name: string
+            url: string
             description: string
             shareableLink?: string
         }[]
@@ -62,17 +66,22 @@ const Home: NextPage<PageProps> = ({ user }) => {
         {
             id: 0,
             name: "Curated",
+            url: "https://github.com/achrafash/curated",
             description:
                 "A monorepo for my indie hacker Pocket plugin to save newsletters, rss feeds and twitter threads",
         },
         {
             id: 1,
             name: "Wordle",
+            url: "https://github.com/achrafash/wordle_rl",
             description: "A Reinforcement Learning Benchmark on Wordle",
-            shareableLink: "https://privaterepo.link/share/SkljdsI", // FIXME - use NEXT_PUBLIC_URI
+            shareableLink: `${PUBLIC_URI}/share/${encodeURIComponent(
+                btoa("https://github.com/achrafash/wordle_rl")
+            )}`,
         },
         {
             id: 2,
+            url: "https://github.com/achrafash/shazam-yourself",
             name: "Shazam Yourself",
             description: "A self-supervised learning model to Shazam Yourself",
         },
@@ -89,8 +98,23 @@ const Home: NextPage<PageProps> = ({ user }) => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <header className="py-4 px-8 border-b border-gray-600">
-                <div className="ml-auto flex items-center space-x-4 w-fit">
+            <header className="py-4 px-8 border-b border-gray-600 flex items-center justify-between">
+                <div className="flex-1 flex items-center justify-center">
+                    <form className="border border-gray-600 rounded flex items-center">
+                        <div className="py-2 px-4">
+                            <SearchIcon size={16} className="text-gray-400" />
+                        </div>
+                        <input
+                            type="text"
+                            name="search"
+                            id="search"
+                            placeholder="Search..."
+                            className="py-2 pr-4 bg-transparent text-sm font-light focus:outline-none"
+                        />
+                    </form>
+                </div>
+
+                <div className="flex items-center space-x-4 w-fit">
                     <div>{user?.login}</div>
                     <div>
                         <Image
@@ -112,7 +136,7 @@ const Home: NextPage<PageProps> = ({ user }) => {
                     {repos.map((repo) => (
                         <li
                             key={repo.id}
-                            className="w-full max-w-sm mx-auto flex flex-col border border-gray-600 rounded shadow p-6 bg-black space-y-2"
+                            className="w-full max-w-sm mx-auto flex flex-col border border-gray-600 rounded shadow p-6 bg-black space-y-4"
                         >
                             <div className="w-full flex justify-between items-center">
                                 <h4 className="font-medium text-white">
@@ -142,9 +166,11 @@ const Home: NextPage<PageProps> = ({ user }) => {
                                             setRepos((val) =>
                                                 val.map((e) => {
                                                     if (e.id === repo.id) {
-                                                        e.shareableLink = `https://privaterepo.link/share/${Buffer.from(
-                                                            repo.name
-                                                        ).toString("base64")}`
+                                                        e.shareableLink = `${PUBLIC_URI}/share/${encodeURIComponent(
+                                                            Buffer.from(
+                                                                repo.url
+                                                            ).toString("base64")
+                                                        )}`
                                                     }
                                                     return e
                                                 })
