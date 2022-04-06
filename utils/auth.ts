@@ -6,6 +6,7 @@ declare module "iron-session" {
         user?: {
             id: number
             accessToken: string
+            login: string
             email: string
         }
         redirect?: string
@@ -35,6 +36,13 @@ export const withAuthPublic = (handler?: any) =>
             if (!req.session.user && req.url !== "/") {
                 // Trigger authentication
                 res.setHeader("location", "/api/auth/login")
+                res.statusCode = 302
+                res.end()
+                return { props: {} }
+            }
+
+            if (req.session.user && req.url === "/") {
+                res.setHeader("location", "/dashboard")
                 res.statusCode = 302
                 res.end()
                 return { props: {} }
