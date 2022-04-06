@@ -1,7 +1,9 @@
 import type { NextPage } from "next"
+import Image from "next/image"
 import Head from "next/head"
 import Link from "next/link"
 import { GitHub as GitHubIcon } from "react-feather"
+import { withAuthPublic } from "utils/auth"
 
 const LandingPage: NextPage = () => {
     return (
@@ -16,6 +18,14 @@ const LandingPage: NextPage = () => {
             </Head>
             <main>
                 <div className="max-w-xl mx-auto py-24 text-center flex flex-col items-center">
+                    <div className="mb-12">
+                        <Image
+                            src="/logo.png"
+                            alt="Logo"
+                            width={140}
+                            height={140}
+                        />
+                    </div>
                     <h1 className="text-4xl font-black mb-6">
                         Shareable Link for your Private Repos
                     </h1>
@@ -27,8 +37,8 @@ const LandingPage: NextPage = () => {
                     </p>
 
                     <div className="mt-12">
-                        <Link href="/api/auth/login">
-                            <button className="bg-black text-white border border-gray-600 rounded py-2 px-8 flex items-center space-x-4">
+                        <Link passHref href="/api/auth/login">
+                            <button className="bg-black text-white border border-gray-600 rounded py-2 px-8 flex items-center space-x-4 transition-all hover:border-gray-400">
                                 <GitHubIcon size={14} />
                                 <span>Login with Github</span>
                             </button>
@@ -39,5 +49,7 @@ const LandingPage: NextPage = () => {
         </div>
     )
 }
+
+export const getServerSideProps = withAuthPublic(() => {})
 
 export default LandingPage
