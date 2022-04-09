@@ -1,0 +1,21 @@
+type User {
+    id: Int!
+    uid: String!
+    email: String!
+    avatarUrl: String
+}
+
+type Repository {
+    id: Int!
+    owner: User!
+    shareableLink: String
+}
+
+type Query {
+    me: User
+    repositories: [Repository!]
+}
+
+type Mutation {
+    generateShareableLink(repositoryId: Int!): String
+}
