@@ -17,10 +17,10 @@ interface PageProps {
 }
 
 const SharePage: NextPage<PageProps> = ({ repo }) => {
-    if (repo === null) return <Error statusCode={404} />
     const router = useRouter()
     const redirectUrl = router.asPath + "/redirect"
 
+    if (repo === null) return <Error statusCode={404} />
     return (
         <main className="min-h-screen bg-gray-900 text-gray-100">
             <div className="flex flex-col items-center space-y-4 max-w-2xl mx-auto py-24">
