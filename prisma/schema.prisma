@@ -12,10 +12,11 @@ datasource db {
 
 model User {
     id           Int          @id @default(autoincrement())
-    uid          String       @unique
-    accessToken  String       @map("access_token")
-    expiresAt    DateTime     @map("expires_at")
+    uid          Int          @unique
+    token        String       @map("access_token")
     email        String
+    login        String
+    fullname     String?
     picture      String?
     createdAt    DateTime     @default(now()) @map("created_at")
     updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
@@ -23,10 +24,12 @@ model User {
 }
 
 model Repository {
-    id        Int      @id @default(autoincrement())
-    user      User     @relation(fields: [uid], references: [uid])
-    uid       String   @map("uid")
+    id        Int       @id @default(autoincrement())
+    token     String    @unique
+    user      User      @relation(fields: [uid], references: [uid])
+    uid       Int       @map("uid")
     name      String
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+    expiresAt DateTime? @map("expires_at")
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
 }
