@@ -6,6 +6,7 @@ import { GitHub as GitHubIcon } from "react-feather"
 import prisma from "utils/db"
 import Error from "next/error"
 import { useRouter } from "next/router"
+import Layout from "components/layout"
 
 interface PageProps {
     repo: {
@@ -22,7 +23,10 @@ const SharePage: NextPage<PageProps> = ({ repo }) => {
 
     if (repo === null) return <Error statusCode={404} />
     return (
-        <main className="min-h-screen bg-gray-900 text-gray-100">
+        <Layout
+            title={`GitBouncer | ${repo.name} by ${repo.owner}`}
+            description={`Login with your Github account to join ${repo.name} by ${repo.owner}`}
+        >
             <div className="flex flex-col items-center space-y-4 max-w-2xl mx-auto py-24 px-6">
                 <div className="mb-8">
                     <Image
@@ -48,7 +52,7 @@ const SharePage: NextPage<PageProps> = ({ repo }) => {
                     </button>
                 </Link>
             </div>
-        </main>
+        </Layout>
     )
 }
 
