@@ -4,10 +4,12 @@ import { withIronSessionApiRoute, withIronSessionSsr } from "iron-session/next"
 declare module "iron-session" {
     interface IronSessionData {
         user?: {
-            id: number
-            accessToken: string
+            uid: number
+            token: string
             login: string
             email: string
+            picture: string
+            fullname: string | null
         }
         redirect?: string
     }
@@ -30,10 +32,10 @@ export const withAuthAPI = (handler: NextApiHandler) =>
         authOpts
     )
 
-export const withAuthPublic = (handler?: any) =>
+export const withAuthPublic = (handler?: any, authRequired: boolean = false) =>
     withIronSessionSsr<{ user: any; expiresAt: Date }>(
         async ({ req, res, params }: any) => {
-            if (!req.session.user && req.url !== "/") {
+            if (!req.session.user && req.url !== "/" && authRequired) {
                 // Trigger authentication
                 res.setHeader("location", "/api/auth/login")
                 res.statusCode = 302
