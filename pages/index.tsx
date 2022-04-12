@@ -10,7 +10,7 @@ const LandingPage: NextPage = () => {
         <div className="min-h-screen bg-gray-900 text-gray-100">
             <Head>
                 <title>
-                    Github Bouncer | Shareable Link for your Private Repos
+                    Github Bouncer | Shareable Links for your Private Repos
                 </title>
                 <meta
                     name="description"
@@ -18,8 +18,9 @@ const LandingPage: NextPage = () => {
                 />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
+
             <main>
-                <div className="max-w-xl mx-auto py-24 text-center flex flex-col items-center">
+                <div className="max-w-xl mx-auto px-6 py-12 md:py-24 text-center flex flex-col items-center">
                     <div className="mb-12">
                         <Image
                             src="/icon.png"
@@ -28,16 +29,20 @@ const LandingPage: NextPage = () => {
                             height={140}
                         />
                     </div>
-                    <h1 className="text-4xl font-black mb-6">
-                        Shareable Link for your Private Repos
+                    <h1 className="text-3xl md:text-4xl font-black mb-6">
+                        Shareable Links for your Private Repos
                     </h1>
-                    <p className="text-gray-400 font-light">
-                        Don&apos;t want to make your repo public but still want
-                        to share it in a closed group? <br />
-                        We got you covered! Connect your Github account and
-                        create a shareable link to let people join your private
-                        repo. That&apos;s it!
-                    </p>
+                    <div className="max-w-sm mx-auto text-gray-400">
+                        <p className="mb-2">
+                            Want to share your repo but don&apos;t want to make
+                            it public?
+                        </p>
+                        <p>
+                            Avoid the usual (awkward) back and forth.
+                            <br />
+                            Send them a link. Keep it private 🔐
+                        </p>
+                    </div>
 
                     <div className="mt-12">
                         <Link passHref href="/api/auth/login">

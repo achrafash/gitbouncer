@@ -98,30 +98,28 @@ const Home: NextPage<PageProps> = ({ user, sharedRepos }) => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
-            <header className="py-4 px-8 border-b border-gray-600 flex items-center justify-between">
-                <div className="flex-1 flex items-center justify-center">
-                    <form
-                        className="border border-gray-600 rounded flex items-center"
-                        onSubmit={(e) => {
-                            e.preventDefault()
-                        }}
-                    >
-                        <div className="py-2 px-4">
-                            <SearchIcon size={16} className="text-gray-400" />
-                        </div>
-                        <input
-                            type="text"
-                            name="search"
-                            id="search"
-                            placeholder="Search..."
-                            className="py-2 pr-4 bg-transparent text-sm font-light focus:outline-none"
-                        />
-                    </form>
-                </div>
+            <header className="py-4 px-6 border-b border-gray-600 flex flex-col-reverse items-center justify-between md:flex-row md:space-y-0">
+                <form
+                    className="border border-gray-600 rounded flex-1 w-full flex items-center max-w-sm mx-auto"
+                    onSubmit={(e) => {
+                        e.preventDefault()
+                    }}
+                >
+                    <div className="py-2 px-4">
+                        <SearchIcon size={16} className="text-gray-400" />
+                    </div>
+                    <input
+                        type="text"
+                        name="search"
+                        id="search"
+                        placeholder="Search..."
+                        className="py-2 pr-4 bg-transparent text-sm font-light focus:outline-none"
+                    />
+                </form>
 
-                <div className="flex items-center space-x-4 w-fit">
-                    <div>{user.login}</div>
-                    <div className="w-10 h-10 overflow-hidden rounded-full ring-2 ring-blue-500 ring-offset-4 ring-offset-gray-900">
+                <div className="flex items-center space-x-4 w-fit mb-6 md:m-0">
+                    <span className="text-sm">{user.login}</span>
+                    <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-blue-400 ring-offset-4 ring-offset-gray-900">
                         <Image
                             className="w-full"
                             src={
