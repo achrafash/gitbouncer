@@ -1,6 +1,6 @@
-import jwt from "jsonwebtoken"
 import { Octokit } from "octokit"
 import { GraphQLDateTime } from "graphql-iso-date"
+import { generate } from "short-uuid"
 import type { Context } from "./context"
 import { sendEmail } from "utils/email"
 
@@ -25,16 +25,14 @@ const resolvers = {
             if (!token) throw Error("Unauthorized")
             // TODO - verify that token matches ownerId
 
-            const shareToken = jwt.sign(
-                { repoId: input.repoId },
-                String(process.env.JWT_SECRET)
-            )
-            const link = `${process.env.NEXT_PUBLIC_URI}/share/${shareToken}`
+            const uuid = generate()
+            const link = `${process.env.NEXT_PUBLIC_URI}/share/${uuid}`
             // save the repository and the token in the database
             try {
                 await ctx.db.repository.create({
                     data: {
                         name: input.name,
+                        uuid,
                         fullname: input.fullname,
                         repoId: input.repoId,
                         ownerId: input.ownerId,

@@ -1,5 +1,4 @@
 import type { NextPage } from "next"
-import jwt from "jsonwebtoken"
 import { withAuthPublic } from "utils/auth"
 import prisma from "utils/db"
 import Error from "next/error"
@@ -54,8 +53,8 @@ const RedirectPage: NextPage<PageProps> = ({ user, repo }) => {
 
     return (
         <main className="min-h-screen bg-gray-900 text-gray-100">
-            <div className="flex flex-col items-center space-y-4 max-w-2xl mx-auto py-24">
-                <p className="mb-4">
+            <div className="flex flex-col items-center space-y-4 max-w-2xl mx-auto py-24 px-6">
+                <p className="mb-4 text-center">
                     Please wait while we add you to <b>{repo.fullname}...</b>
                 </p>
                 {error && (
@@ -69,11 +68,11 @@ const RedirectPage: NextPage<PageProps> = ({ user, repo }) => {
 }
 
 export const getServerSideProps = withAuthPublic(async ({ params }: any) => {
-    const { token } = params
-    const { repoId }: any = jwt.verify(token, String(process.env.JWT_SECRET))
+    const { uuid } = params
     const repo = await prisma.repository.findUnique({
-        where: { repoId: Number(repoId) },
+        where: { uuid: String(uuid) },
         select: {
+            repoId: true,
             fullname: true,
             htmlUrl: true,
         },
@@ -83,7 +82,7 @@ export const getServerSideProps = withAuthPublic(async ({ params }: any) => {
     return {
         props: {
             repo: {
-                id: repoId,
+                id: repo.repoId,
                 fullname: repo.fullname,
                 htmlUrl: repo.htmlUrl,
             },

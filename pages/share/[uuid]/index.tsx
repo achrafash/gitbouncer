@@ -1,6 +1,6 @@
-import Link from "next/link"
 import type { NextPage } from "next"
-import jwt from "jsonwebtoken"
+import Link from "next/link"
+import Image from "next/image"
 import { withAuthPublic } from "utils/auth"
 import { GitHub as GitHubIcon } from "react-feather"
 import prisma from "utils/db"
@@ -23,8 +23,17 @@ const SharePage: NextPage<PageProps> = ({ repo }) => {
     if (repo === null) return <Error statusCode={404} />
     return (
         <main className="min-h-screen bg-gray-900 text-gray-100">
-            <div className="flex flex-col items-center space-y-4 max-w-2xl mx-auto py-24">
-                <h3 className="text-xl">
+            <div className="flex flex-col items-center space-y-4 max-w-2xl mx-auto py-24 px-6">
+                <div className="mb-8">
+                    <Image
+                        src="/icon.png"
+                        alt="Logo"
+                        width={120}
+                        height={120}
+                    />
+                </div>
+
+                <h3 className="text-xl text-center">
                     Join <b>{repo.name}</b> by {repo.owner}
                 </h3>
                 <Link
@@ -44,10 +53,9 @@ const SharePage: NextPage<PageProps> = ({ repo }) => {
 }
 
 export const getServerSideProps = withAuthPublic(async ({ params }: any) => {
-    const { token } = params
-    const { repoId }: any = jwt.verify(token, String(process.env.JWT_SECRET))
+    const { uuid } = params
     const repo = await prisma.repository.findUnique({
-        where: { repoId: Number(repoId) },
+        where: { uuid: String(uuid) },
         include: { owner: true },
     })
     if (!repo) return { props: { repo: null } }
