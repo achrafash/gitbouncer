@@ -10,6 +10,7 @@ workflow
 
 - fix: permissions is set to "write" by default -> change that!
 - fix hot reload -> I have the experimental features turned on, that is why!
+- show some loading spinners
 ✅ get user email from github
 - use swr to cache the requests on the client
 - implement the search feature
