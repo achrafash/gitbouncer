@@ -10,7 +10,7 @@ const LandingPage: NextPage = () => {
         <div className="min-h-screen bg-gray-900 text-gray-100">
             <Head>
                 <title>
-                    Github Bouncer | Shareable Links for your Private Repos
+                    GitBouncer | Shareable Links for your Private Repos
                 </title>
                 <meta
                     name="description"
@@ -32,10 +32,10 @@ const LandingPage: NextPage = () => {
                     <h1 className="text-3xl md:text-4xl font-black mb-6">
                         Shareable Links for your Private Repos
                     </h1>
-                    <div className="max-w-sm mx-auto text-gray-400">
+                    <div className="text-gray-400">
                         <p className="mb-2">
-                            Want to share your repo but don&apos;t want to make
-                            it public?
+                            Want to share a repo but don&apos;t want to make it
+                            public?
                         </p>
                         <p>
                             Avoid the usual (awkward) back and forth.
