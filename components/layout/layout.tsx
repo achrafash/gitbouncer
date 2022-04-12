@@ -12,6 +12,7 @@ const defaultDescription = "Shareable Links for your Private Repos"
 const SEO: FC<SEOProps> = ({ title, description }) => {
     return (
         <Head>
+            <link rel="icon" href="/favicon.ico" />
             <title>{title || defaultTitle}</title>
             <meta
                 name="description"
@@ -26,15 +27,19 @@ const SEO: FC<SEOProps> = ({ title, description }) => {
                 property="og:image"
                 content="https://gitbouncer.vercel.app/twitter_card.png"
             />
-            <meta property="og:url" content="https://withcurated.com" />
+            <meta property="og:url" content="https://gitbouncer.vercel.app" />
             <meta property="og:site_name" content="GitBouncer" />
             <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:creator" content="@AchrafTOTW" />
+            <meta name="twitter:title" content={title || defaultTitle} />
             <meta
-                name="twitter:image:alt"
+                name="twitter:description"
                 content={description || defaultDescription}
             />
-            <link rel="icon" href="/favicon.ico" />
-            {/* <meta name="twitter:site" content="@Pocketfunnel_" /> */}
+            <meta
+                name="twitter:image"
+                content="https://gitbouncer.vercel.app/twitter_card.png"
+            />
         </Head>
     )
 }
