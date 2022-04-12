@@ -34,6 +34,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         token,
     }
     req.session.user = user
+    await req.session.save()
+
     await prisma.user.upsert({
         where: { uid: user.uid },
         create: {
@@ -48,7 +50,6 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             token,
         },
     })
-    await req.session.save()
 
     const redirect = req.session.redirect || "/dashboard"
     req.session.redirect = undefined
