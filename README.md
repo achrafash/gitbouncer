@@ -2,17 +2,15 @@ workflow
 ✅ user login
 ✅ fetch user repos
 ✅ generate shareable link
-    - add repo to the database
 ✅ visitor login
-5. add visitor as collaborator while showing a loading screen: "You're getting added to the private repo"
-6. redirect the visitor to the repo and send an email to the owner
+✅ add visitor as collaborator while showing a loading screen: "You're getting added to the private repo"
+✅ redirect the visitor to the repo and send an email to the owner
 
-
+✅ get user email from github
+- show some loading spinners
 - fix: permissions is set to "write" by default -> change that!
 - fix hot reload -> I have the experimental features turned on, that is why!
-- show some loading spinners
-✅ get user email from github
-- use swr to cache the requests on the client
+- use react-query to cache the requests on the client
 - implement the search feature
 - lazy loading of repos with skeleton
 - micro interactions
