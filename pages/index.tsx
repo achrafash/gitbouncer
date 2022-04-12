@@ -20,7 +20,7 @@ const LandingPage: NextPage = () => {
                 <div className="max-w-xl mx-auto py-24 text-center flex flex-col items-center">
                     <div className="mb-12">
                         <Image
-                            src="/logo.png"
+                            src="/icon.png"
                             alt="Logo"
                             width={140}
                             height={140}
@@ -30,10 +30,11 @@ const LandingPage: NextPage = () => {
                         Shareable Link for your Private Repos
                     </h1>
                     <p className="text-gray-400 font-light">
-                        Don&apos;t want to make your repo public but you still
-                        want to share it with a group of people easily? We got
-                        you! Connect your Github account and create a shareable
-                        link to let people join your private repo.
+                        Don&apos;t want to make your repo public but still want
+                        to share it in a closed group? <br />
+                        We got you covered! Connect your Github account and
+                        create a shareable link to let people join your private
+                        repo. That&apos;s it!
                     </p>
 
                     <div className="mt-12">
@@ -50,6 +51,6 @@ const LandingPage: NextPage = () => {
     )
 }
 
-export const getServerSideProps = withAuthPublic(() => {})
+export const getServerSideProps = withAuthPublic()
 
 export default LandingPage
