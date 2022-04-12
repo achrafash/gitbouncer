@@ -6,6 +6,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (method === "GET") {
         const { redirect } = req.query
 
+        // TODO - refactor with URL Params class
         // const SCOPES = "read:user,user:email,repo:invite"
         const SCOPES = "read:user,user:email,repo" // FIXME - figure out the minimal scopes
         const redirectComponent = encodeURIComponent(
