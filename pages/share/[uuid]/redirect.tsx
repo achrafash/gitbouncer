@@ -1,10 +1,9 @@
 import type { NextPage } from "next"
+import { useRouter } from "next/router"
 import { withAuthPublic } from "utils/auth"
 import prisma from "utils/db"
 import Error from "next/error"
 import { useEffect, useState } from "react"
-
-// TODO - redirect to /index if user is not logged in
 
 // FIXME - figure out why GraphQL doesn't return success and display the right error message
 
@@ -49,7 +48,7 @@ const RedirectPage: NextPage<PageProps> = ({ user, repo }) => {
         joinRepo()
     })
 
-    if (repo === null) return <Error statusCode={404} />
+    if (repo === null || user === null) return <Error statusCode={404} />
 
     return (
         <main className="min-h-screen bg-gray-900 text-gray-100">
