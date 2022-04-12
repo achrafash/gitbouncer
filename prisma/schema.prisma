@@ -28,6 +28,7 @@ model User {
 model Repository {
     id            Int      @id @default(autoincrement())
     repoId        Int      @unique @map("repo_id")
+    uuid          String   @unique
     owner         User     @relation(fields: [ownerId], references: [uid])
     ownerId       Int      @map("owner_id")
     name          String
