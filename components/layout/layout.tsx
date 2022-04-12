@@ -23,12 +23,13 @@ const SEO: FC<SEOProps> = ({ title, description }) => {
                 property="og:description"
                 content={description || defaultDescription}
             />
+            <meta property="og:url" content="https://gitbouncer.vercel.app" />
+            <meta property="og:site_name" content="GitBouncer" />
             <meta
                 property="og:image"
                 content="https://gitbouncer.vercel.app/twitter_card.png"
             />
-            <meta property="og:url" content="https://gitbouncer.vercel.app" />
-            <meta property="og:site_name" content="GitBouncer" />
+
             <meta name="twitter:card" content="summary_large_image" />
             <meta name="twitter:creator" content="@AchrafTOTW" />
             <meta name="twitter:title" content={title || defaultTitle} />
