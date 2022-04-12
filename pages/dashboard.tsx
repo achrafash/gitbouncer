@@ -10,8 +10,9 @@ import {
     Check as CheckIcon,
     Search as SearchIcon,
 } from "react-feather"
-import { withAuthPublic } from "utils/auth"
 import { Octokit } from "octokit"
+import { withAuthPublic } from "utils/auth"
+import prisma from "utils/db"
 
 interface PageProps {
     user: {
@@ -20,6 +21,10 @@ interface PageProps {
         picture: string
         token: string
     }
+    sharedRepos: {
+        repoId: number
+        shareableLink: string
+    }[]
 }
 
 interface Repo {
@@ -28,13 +33,10 @@ interface Repo {
     description: string | null
     name: string
     full_name: string
-    shareableLink?: string
     [property: string]: any
 }
 
-const PUBLIC_URI = process.env.NEXT_PUBLIC_URI
-
-const Home: NextPage<PageProps> = ({ user }) => {
+const Home: NextPage<PageProps> = ({ user, sharedRepos }) => {
     const [repos, setRepos] = useState<Repo[]>([])
 
     useEffect(() => {
@@ -43,10 +45,47 @@ const Home: NextPage<PageProps> = ({ user }) => {
             const { data } = await octokit.request("GET /user/repos", {
                 visibility: "private",
             })
-            setRepos(data)
+            return data
         }
-        getPrivateRepos()
-    }, [user])
+
+        async function getSharedRepos(baseRepos: Repo[]) {
+            // const response = await fetch(`/api/graphql`, {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         Accept: "application/json",
+            //         Authorization: `Bearer ${user.token}`,
+            //     },
+            //     body: JSON.stringify({
+            //         query: `query repositories {
+            //             repoId
+            //             shareableLink
+            //         }`,
+            //     }),
+            // })
+            // const { data }: any = await response.json()
+
+            setRepos(
+                baseRepos.map((repo) => {
+                    const matchedRepo = sharedRepos.filter(
+                        (r: any) => r.repoId === repo.id
+                    )
+                    let link: string | null = null
+
+                    if (matchedRepo.length > 0) {
+                        link = matchedRepo[0].shareableLink
+                    }
+
+                    return {
+                        ...repo,
+                        link,
+                    }
+                })
+            )
+        }
+
+        getPrivateRepos().then(getSharedRepos)
+    }, [user, sharedRepos])
 
     return (
         <div className="min-h-screen bg-gray-900 text-gray-100">
@@ -82,9 +121,9 @@ const Home: NextPage<PageProps> = ({ user }) => {
 
                 <div className="flex items-center space-x-4 w-fit">
                     <div>{user.login}</div>
-                    <div>
+                    <div className="w-10 h-10 overflow-hidden rounded-full ring-2 ring-blue-500 ring-offset-4 ring-offset-gray-900">
                         <Image
-                            className="rounded-full border border-gray-200"
+                            className="w-full"
                             src={
                                 user.picture ||
                                 "https://wallpaperaccess.com/full/4595683.jpg"
@@ -97,79 +136,22 @@ const Home: NextPage<PageProps> = ({ user }) => {
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto py-12 px-6">
+            <main className="max-w-6xl mx-auto py-12 px-6">
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {repos.map((repo) => (
                         <li
                             key={repo.id}
                             className="w-full max-w-sm mx-auto flex flex-col border border-gray-600 rounded shadow p-6 bg-black space-y-4"
                         >
-                            <div className="flex justify-between items-start space-x-4">
-                                <div className="flex-1">
-                                    <h4 className="font-medium text-white">
-                                        {repo.name}
-                                    </h4>
-                                    <small className="text-gray-400 text-xs">
-                                        {repo.full_name}
-                                    </small>
-                                </div>
-                                {repo.shareableLink ? (
-                                    <button
-                                        onClick={() => {
-                                            setRepos((val) =>
-                                                val.map((e) => {
-                                                    if (e.id === repo.id) {
-                                                        e.shareableLink =
-                                                            undefined
-                                                    }
-                                                    return e
-                                                })
-                                            )
-                                        }}
-                                        className="p-1"
-                                        title="Stop sharing"
-                                    >
-                                        <LockIcon size={16} />
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={() => {
-                                            setRepos((val) =>
-                                                val.map((e) => {
-                                                    if (e.id === repo.id) {
-                                                        e.shareableLink = `${PUBLIC_URI}/share/${encodeURIComponent(
-                                                            Buffer.from(
-                                                                repo.html_url
-                                                            ).toString("base64")
-                                                        )}`
-                                                    }
-                                                    return e
-                                                })
-                                            )
-                                        }}
-                                        className="p-1"
-                                        title="Get shareable link"
-                                    >
-                                        <UnlockIcon size={16} />
-                                    </button>
-                                )}
-                            </div>
-                            <p
-                                className="flex-1 font-light text-sm line-clamp-2"
-                                title={repo.description || ""}
-                            >
-                                {repo.description || ""}
-                            </p>
-                            {repo.shareableLink && (
-                                <div className="flex">
-                                    <div className="w-full border border-gray-600 bg-gray-800 text-sm truncate p-1">
-                                        {repo.shareableLink}
-                                    </div>
-                                    <CopyButton>
-                                        {repo.shareableLink}
-                                    </CopyButton>
-                                </div>
-                            )}
+                            <RepoCard
+                                id={repo.id}
+                                name={repo.name}
+                                fullname={repo.full_name}
+                                description={repo.description || ""}
+                                htmlUrl={repo.html_url}
+                                owner={{ token: user.token, id: repo.owner.id }}
+                                link={repo.link}
+                            />
                         </li>
                     ))}
                 </ul>
@@ -202,6 +184,110 @@ const CopyButton: FC = ({ children }) => {
     )
 }
 
-export const getServerSideProps = withAuthPublic()
+interface RepoCardProps {
+    id: number
+    name: string
+    fullname: string
+    description: string
+    htmlUrl: string
+    owner: any
+    link?: string
+}
+
+const RepoCard: FC<RepoCardProps> = ({
+    id,
+    name,
+    fullname,
+    description,
+    htmlUrl,
+    owner,
+    link,
+}) => {
+    const [shareableLink, setShareableLink] = useState(link || "")
+
+    async function createLink() {
+        const response = await fetch(`/api/graphql`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${owner.token}`,
+            },
+            body: JSON.stringify({
+                query: "mutation CreateLink($input: CreateShareableLinkInput) { link:createShareableLink(input: $input) }",
+                variables: {
+                    input: {
+                        repoId: id,
+                        name,
+                        fullname,
+                        htmlUrl,
+                        ownerId: owner.id,
+                    },
+                },
+            }),
+        })
+        const { data } = await response.json()
+        if (!data || !data.link) return alert("something went wrong")
+        console.log({ data })
+        setShareableLink(data.link)
+    }
+
+    return (
+        <>
+            <div className="flex justify-between items-start space-x-4">
+                <div className="flex-1">
+                    <h4 className="font-medium text-white">{name}</h4>
+                    <small className="text-gray-400 text-xs">{fullname}</small>
+                </div>
+                {shareableLink === "" ? (
+                    <button
+                        onClick={createLink}
+                        className="p-1"
+                        title="Create shareable link"
+                    >
+                        <UnlockIcon size={16} />
+                    </button>
+                ) : (
+                    <button
+                        onClick={() => setShareableLink("")}
+                        className="p-1"
+                        title="Stop sharing"
+                    >
+                        <LockIcon size={16} />
+                    </button>
+                )}
+            </div>
+            <p
+                className="flex-1 font-light text-sm line-clamp-3"
+                title={description || ""}
+            >
+                {description || ""}
+            </p>
+            {shareableLink && (
+                <div className="flex">
+                    <div className="w-full border border-gray-600 bg-gray-800 text-sm truncate p-1">
+                        {shareableLink}
+                    </div>
+                    <CopyButton>{shareableLink}</CopyButton>
+                </div>
+            )}
+        </>
+    )
+}
+
+export const getServerSideProps = withAuthPublic(async ({ req }: any) => {
+    const sharedRepos = await prisma.repository.findMany({
+        where: { owner: { token: req.session.user.token } },
+    })
+
+    return {
+        props: {
+            sharedRepos: sharedRepos.map((repo) => ({
+                repoId: repo.repoId,
+                shareableLink: repo.shareableLink,
+            })),
+        },
+    }
+})
 
 export default Home
