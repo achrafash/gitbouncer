@@ -21,15 +21,21 @@ model User {
     createdAt    DateTime     @default(now()) @map("created_at")
     updatedAt    DateTime     @default(now()) @updatedAt @map("updated_at")
     repositories Repository[]
+
+    @@map("users")
 }
 
 model Repository {
-    id        Int       @id @default(autoincrement())
-    token     String    @unique
-    user      User      @relation(fields: [uid], references: [uid])
-    uid       Int       @map("uid")
-    name      String
-    expiresAt DateTime? @map("expires_at")
-    createdAt DateTime  @default(now()) @map("created_at")
-    updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+    id            Int      @id @default(autoincrement())
+    repoId        Int      @unique @map("repo_id")
+    owner         User     @relation(fields: [ownerId], references: [uid])
+    ownerId       Int      @map("owner_id")
+    name          String
+    fullname      String   @map("full_name")
+    shareableLink String   @map("shareable_link")
+    htmlUrl       String   @map("html_url")
+    createdAt     DateTime @default(now()) @map("created_at")
+    deletedAt     DateTime @default(now()) @updatedAt @map("deleted_at")
+
+    @@map("repositories")
 }

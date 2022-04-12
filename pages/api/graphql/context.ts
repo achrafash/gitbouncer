@@ -3,13 +3,13 @@ import type { PrismaClient } from "@prisma/client"
 import prisma from "utils/db"
 
 export interface Context {
-    prisma: PrismaClient
+    db: PrismaClient
     req: {
         headers: {
             authorization: string
         }
         user: {
-            accessToken: string
+            token: string
         }
     }
     res: any
@@ -22,10 +22,10 @@ export const createContext = ({ res, req }: any): Context => {
     }
     const accessToken = authHeader.replace("Bearer ", "") // Authorization: Bearer {{token}}
 
-    req.user = { accessToken }
+    req.user = { token: accessToken }
 
     return {
-        prisma,
+        db: prisma,
         req,
         res,
     }

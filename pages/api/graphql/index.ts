@@ -1,7 +1,7 @@
 import "graphql-import-node"
 import type { NextApiRequest, NextApiResponse } from "next"
 import { ApolloServer } from "apollo-server-micro"
-import * as typeDefs from "./schema.graphql"
+import typeDefs from "./schema"
 import resolvers from "./resolvers"
 import { createContext } from "./context"
 

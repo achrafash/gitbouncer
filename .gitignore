@@ -18,6 +18,8 @@
 # misc
 .DS_Store
 *.pem
+dev.db
+dev.sqlite
 
 # debug
 npm-debug.log*
