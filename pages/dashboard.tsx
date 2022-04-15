@@ -42,6 +42,7 @@ const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
             const octokit = new Octokit({ auth: user.token })
             const { data } = await octokit.request("GET /user/repos", {
                 visibility: "private",
+                affiliation: "owner",
             })
             return data
         },
