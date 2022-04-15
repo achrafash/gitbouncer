@@ -6,6 +6,7 @@ import {
     Copy as CopyIcon,
     Check as CheckIcon,
 } from "react-feather"
+import { Spinner } from "components/ui"
 
 interface RepoItemProps {
     id: number
@@ -51,8 +52,10 @@ const RepoItem: FC<RepoItemProps> = ({
     link,
 }) => {
     const [shareableLink, setShareableLink] = useState(link || "")
+    const [loading, setLoading] = useState(false)
 
     async function createLink() {
+        setLoading(true)
         const response = await fetch(`/api/graphql`, {
             method: "POST",
             headers: {
@@ -78,9 +81,11 @@ const RepoItem: FC<RepoItemProps> = ({
         if (errors) return alert("something went wrong")
         console.log({ data, errors })
         setShareableLink(data.link)
+        setLoading(false)
     }
 
     async function disableLinkSharing() {
+        setLoading(true)
         const response = await fetch(`/api/graphql`, {
             method: "POST",
             headers: {
@@ -96,6 +101,7 @@ const RepoItem: FC<RepoItemProps> = ({
         const { data, errors } = await response.json()
         console.log({ data, errors })
         setShareableLink("")
+        setLoading(false)
     }
 
     return (
@@ -105,7 +111,9 @@ const RepoItem: FC<RepoItemProps> = ({
                     <h4 className="font-medium text-white">{name}</h4>
                     <small className="text-gray-400 text-xs">{fullname}</small>
                 </div>
-                {shareableLink === "" ? (
+                {loading ? (
+                    <Spinner />
+                ) : shareableLink === "" ? (
                     <button
                         onClick={createLink}
                         className="p-1"
@@ -129,13 +137,17 @@ const RepoItem: FC<RepoItemProps> = ({
             >
                 {description || ""}
             </p>
-            {shareableLink && (
-                <div className="flex">
-                    <div className="w-full border border-gray-600 bg-gray-800 text-sm truncate p-1">
-                        {shareableLink}
+            {loading ? (
+                <div className="animate-pulse rounded-lg bg-gray-700 h-5" />
+            ) : (
+                shareableLink && (
+                    <div className="flex">
+                        <div className="w-full border border-gray-600 bg-gray-800 text-sm truncate p-1">
+                            {shareableLink}
+                        </div>
+                        <CopyButton>{shareableLink}</CopyButton>
                     </div>
-                    <CopyButton>{shareableLink}</CopyButton>
-                </div>
+                )
             )}
         </li>
     )
