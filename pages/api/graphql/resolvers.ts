@@ -3,7 +3,7 @@ import { GraphQLDateTime } from "graphql-iso-date"
 import { generate } from "short-uuid"
 import type { Context } from "./context"
 import { sendEmail } from "utils/email"
-import { readFileSync } from "fs"
+import { inviteeNotification } from "emails/invitee-notification"
 
 const resolvers = {
     Date: GraphQLDateTime,
@@ -98,26 +98,18 @@ const resolvers = {
             )
 
             // send email to the owner
-            // TODO - format a bit better and add links to joiner profile and repo page
-            const email = readFileSync("emails/invitee-notification.html")
-                .toString()
-                .replaceAll(/{{\s*username\s*}}/g, repo.owner.login)
-                .replaceAll(/{{\s*invitee\s*}}/g, joiner)
-                .replaceAll(
-                    /{{\s*invitee_url\s*}}/g,
-                    `https://github.com/${joiner}`
-                )
-                .replaceAll(/{{\s*repo_fullname\s*}}/g, "AchrafAsh/curated")
-                .replaceAll(/{{\s*repo_url\s*}}/g, repo.htmlUrl)
-                .replaceAll(
-                    /{{\s*action_url\s*}}/g,
-                    String(process.env.NEXT_PUBLIC_URI)
-                )
             try {
                 await sendEmail({
                     recipient: repo.owner.email,
                     subject: `Someone joined ${repo.name}`,
-                    body: email,
+                    body: inviteeNotification({
+                        username: repo.owner.login,
+                        invitee: joiner,
+                        invitee_url: `https://github.com/${joiner}`,
+                        action_url: String(process.env.NEXT_PUBLIC_URI),
+                        repo_fullname: repo.fullname,
+                        repo_url: repo.htmlUrl,
+                    }),
                 })
             } catch (err) {
                 console.error(err)
