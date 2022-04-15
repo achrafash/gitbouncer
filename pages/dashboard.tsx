@@ -2,17 +2,12 @@ import type { NextPage } from "next"
 import { FC, ChangeEvent, useRef, useCallback } from "react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import {
-    Unlock as UnlockIcon,
-    Lock as LockIcon,
-    Copy as CopyIcon,
-    Check as CheckIcon,
-    Search as SearchIcon,
-} from "react-feather"
+import { Search as SearchIcon } from "react-feather"
 import { Octokit } from "octokit"
 import { withAuthPublic } from "utils/auth"
 import prisma from "utils/db"
 import Layout from "components/layout"
+import { RepoItem } from "components/repo-item"
 
 interface PageProps {
     user: {
@@ -131,7 +126,7 @@ const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
             <div className="max-w-6xl mx-auto py-12 px-6">
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {filteredRepositories.map((repo) => (
-                        <RepoCard
+                        <RepoItem
                             key={repo.id}
                             id={repo.id}
                             name={repo.name}
@@ -192,139 +187,6 @@ const SearchBar: FC<SearchBarProps> = ({ onChange }) => {
                 <span className="text-gray-600 text-xs font-bold">/</span>
             </div>
         </form>
-    )
-}
-
-const CopyButton: FC = ({ children }) => {
-    const [copied, setCopied] = useState(false)
-
-    useEffect(() => {
-        if (copied) {
-            setTimeout(() => setCopied(false), 3000)
-        }
-    }, [copied])
-
-    return (
-        <button
-            onClick={() => {
-                navigator.clipboard.writeText(String(children))
-                setCopied(true)
-            }}
-            disabled={copied}
-            title="Copy to clipboard"
-            className="py-1 px-2 bg-gray-600"
-        >
-            {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
-        </button>
-    )
-}
-
-interface RepoCardProps {
-    id: number
-    name: string
-    fullname: string
-    description: string
-    htmlUrl: string
-    owner: any
-    link?: string
-}
-
-const RepoCard: FC<RepoCardProps> = ({
-    id,
-    name,
-    fullname,
-    description,
-    htmlUrl,
-    owner,
-    link,
-}) => {
-    const [shareableLink, setShareableLink] = useState(link || "")
-
-    async function createLink() {
-        const response = await fetch(`/api/graphql`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${owner.token}`,
-            },
-            body: JSON.stringify({
-                query: "mutation CreateLink($input: CreateShareableLinkInput) { link:createShareableLink(input: $input) }",
-                variables: {
-                    input: {
-                        repoId: id,
-                        name,
-                        fullname,
-                        htmlUrl,
-                        ownerId: owner.id,
-                    },
-                },
-            }),
-        })
-        const { data, errors } = await response.json()
-        if (!data || !data.link) return alert("something went wrong")
-        console.log({ data, errors })
-        setShareableLink(data.link)
-    }
-
-    async function disableLinkSharing() {
-        const response = await fetch(`/api/graphql`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${owner.token}`,
-            },
-            body: JSON.stringify({
-                query: "mutation DisableSharing($repoId: Int!) { disableSharing(repoId: $repoId) { repoId } }",
-                variables: { repoId: id },
-            }),
-        })
-        const { data, errors } = await response.json()
-        console.log({ data, errors })
-        setShareableLink("")
-    }
-
-    return (
-        <li className="w-full max-w-sm mx-auto flex flex-col border border-gray-600 rounded shadow p-6 bg-black space-y-4 hover:border-gray-400 transition-all">
-            <div className="flex justify-between items-start space-x-4">
-                <div className="flex-1">
-                    <h4 className="font-medium text-white">{name}</h4>
-                    <small className="text-gray-400 text-xs">{fullname}</small>
-                </div>
-                {shareableLink === "" ? (
-                    <button
-                        onClick={createLink}
-                        className="p-1"
-                        title="Create shareable link"
-                    >
-                        <LockIcon size={16} />
-                    </button>
-                ) : (
-                    <button
-                        onClick={disableLinkSharing}
-                        className="p-1"
-                        title="Stop sharing"
-                    >
-                        <UnlockIcon size={16} />
-                    </button>
-                )}
-            </div>
-            <p
-                className="flex-1 font-light text-sm line-clamp-3"
-                title={description || ""}
-            >
-                {description || ""}
-            </p>
-            {shareableLink && (
-                <div className="flex">
-                    <div className="w-full border border-gray-600 bg-gray-800 text-sm truncate p-1">
-                        {shareableLink}
-                    </div>
-                    <CopyButton>{shareableLink}</CopyButton>
-                </div>
-            )}
-        </li>
     )
 }
 
