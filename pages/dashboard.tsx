@@ -1,5 +1,5 @@
 import type { NextPage } from "next"
-import { FC, ChangeEvent, useRef, useCallback } from "react"
+import { FC, ChangeEvent, useRef, useCallback, Fragment } from "react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
 import { Search as SearchIcon } from "react-feather"
@@ -33,6 +33,7 @@ interface Repo {
 
 const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
     const [allRepositories, setAllRepositories] = useState<Repo[]>([])
+    const [loading, setLoading] = useState(true)
     const [filteredRepositories, setFilteredRepositories] = useState<Repo[]>([])
 
     const getPrivateRepositories = useCallback(
@@ -73,11 +74,13 @@ const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
             repositories = attachLink(repositories)
             setAllRepositories(repositories)
             setFilteredRepositories(repositories)
+            setLoading(false)
         }
         init()
     }, [user, sharedRepos, attachLink, getPrivateRepositories])
 
     async function filterRepositories(e: ChangeEvent<HTMLInputElement>) {
+        setLoading(true)
         const query = e.target.value
 
         if (query === "") setFilteredRepositories(allRepositories)
@@ -99,6 +102,7 @@ const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
             foundRepositories = attachLink(data.items)
         }
         setFilteredRepositories(foundRepositories)
+        setLoading(false)
     }
 
     return (
@@ -125,21 +129,57 @@ const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
 
             <div className="max-w-6xl mx-auto py-12 px-6">
                 <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredRepositories.map((repo) => (
-                        <RepoItem
-                            key={repo.id}
-                            id={repo.id}
-                            name={repo.name}
-                            fullname={repo.full_name}
-                            description={repo.description || ""}
-                            htmlUrl={repo.html_url}
-                            owner={{ token: user.token, id: repo.owner.id }}
-                            link={repo.link}
-                        />
-                    ))}
+                    {loading ? (
+                        <LoadingItems count={3} />
+                    ) : (
+                        filteredRepositories.map((repo) => (
+                            <RepoItem
+                                key={repo.id}
+                                id={repo.id}
+                                name={repo.name}
+                                fullname={repo.full_name}
+                                description={repo.description || ""}
+                                htmlUrl={repo.html_url}
+                                owner={{ token: user.token, id: repo.owner.id }}
+                                link={repo.link}
+                            />
+                        ))
+                    )}
                 </ul>
             </div>
         </Layout>
+    )
+}
+
+function range(number: number) {
+    return Array.from(new Array(number), (x, i) => i)
+}
+
+const LoadingItems: FC<{ count: number }> = ({ count }) => {
+    return (
+        <Fragment>
+            {range(count).map((el) => (
+                <li
+                    key={el}
+                    className="w-full max-w-sm mx-auto border border-gray-600 rounded shadow p-6 bg-black hover:border-gray-400 transition-all"
+                >
+                    <div className="animate-pulse">
+                        <div className="flex justify-between items-start space-x-8 mb-4">
+                            <div className="flex-1 space-y-2">
+                                <div className="bg-gray-700 rounded h-2 w-40" />
+                                <div className="bg-gray-700 rounded h-2 w-32" />
+                            </div>
+                            <div className="bg-gray-700 rounded w-5 h-5" />
+                        </div>
+                        <div className="space-y-2">
+                            <div className="bg-gray-700 rounded h-2" />
+                            <div className="bg-gray-700 rounded h-2" />
+                            <div className="bg-gray-700 rounded h-2" />
+                        </div>
+                    </div>
+                </li>
+            ))}
+        </Fragment>
     )
 }
 
