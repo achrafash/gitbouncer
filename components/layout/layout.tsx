@@ -27,7 +27,7 @@ const SEO: FC<SEOProps> = ({ title, description }) => {
             <meta property="og:site_name" content="GitBouncer" />
             <meta
                 property="og:image"
-                content="https://gitbouncer.vercel.app/twitter_card.png"
+                content="https://gitbouncer.vercel.app/twitter_card.jpg"
             />
 
             <meta name="twitter:card" content="summary_large_image" />
@@ -39,7 +39,7 @@ const SEO: FC<SEOProps> = ({ title, description }) => {
             />
             <meta
                 name="twitter:image"
-                content="https://gitbouncer.vercel.app/twitter_card.png"
+                content="https://gitbouncer.vercel.app/twitter_card.jpg"
             />
         </Head>
     )
