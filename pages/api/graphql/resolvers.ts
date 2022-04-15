@@ -24,11 +24,14 @@ const resolvers = {
             const { token } = ctx.req.user
             if (!token) throw Error("Unauthorized")
 
-            let repo = await ctx.db.repository.update({
+            let repo = await ctx.db.repository.findUnique({
                 where: { repoId: input.repoId },
-                data: { deletedAt: null },
             })
             if (repo) {
+                await ctx.db.repository.update({
+                    where: { repoId: input.repoId },
+                    data: { deletedAt: null },
+                })
                 return repo.shareableLink
             }
 
