@@ -261,9 +261,9 @@ const RepoCard: FC<RepoCardProps> = ({
                 },
             }),
         })
-        const { data } = await response.json()
+        const { data, errors } = await response.json()
         if (!data || !data.link) return alert("something went wrong")
-        console.log({ data })
+        console.log({ data, errors })
         setShareableLink(data.link)
     }
 
@@ -328,10 +328,20 @@ const RepoCard: FC<RepoCardProps> = ({
     )
 }
 
-export const getServerSideProps = withAuthPublic(async ({ req }: any) => {
+export const getServerSideProps = withAuthPublic(async ({ req, res }: any) => {
+    const user = await prisma.user.findFirst({
+        where: { token: req.session.user.token },
+    })
+    if (!user) {
+        // Trigger authentication
+        res.setHeader("location", "/api/auth/login")
+        res.statusCode = 302
+        res.end()
+        return { props: {} }
+    }
     let sharedRepos = await prisma.repository.findMany({
         where: {
-            owner: { token: req.session.user.token },
+            owner: user,
             deletedAt: null,
         },
         select: {
