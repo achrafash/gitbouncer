@@ -12,10 +12,15 @@ const typeDefs = gql`
 
     type Repository {
         id: Int!
+        repoId: Int!
         owner: User!
-        token: String
+        uuid: String!
+        name: String!
+        fullname: String!
+        htmlUrl: String!
         shareableLink: String
-        expiresAt: Date
+        createdAt: Date!
+        deletedAt: Date
     }
 
     type Query {
@@ -38,6 +43,7 @@ const typeDefs = gql`
     type Mutation {
         createShareableLink(input: CreateShareableLinkInput): String
         addCollaborator(input: AddCollaboratorInput): Boolean
+        disableSharing(repoId: Int!): Repository
     }
 `
 
