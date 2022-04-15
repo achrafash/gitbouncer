@@ -26,17 +26,17 @@ model User {
 }
 
 model Repository {
-    id            Int      @id @default(autoincrement())
-    repoId        Int      @unique @map("repo_id")
-    uuid          String   @unique
-    owner         User     @relation(fields: [ownerId], references: [uid])
-    ownerId       Int      @map("owner_id")
+    id            Int       @id @default(autoincrement())
+    repoId        Int       @unique @map("repo_id")
+    uuid          String    @unique
+    owner         User      @relation(fields: [ownerId], references: [uid])
+    ownerId       Int       @map("owner_id")
     name          String
-    fullname      String   @map("full_name")
-    shareableLink String   @map("shareable_link")
-    htmlUrl       String   @map("html_url")
-    createdAt     DateTime @default(now()) @map("created_at")
-    deletedAt     DateTime @default(now()) @updatedAt @map("deleted_at")
+    fullname      String    @map("full_name")
+    shareableLink String    @map("shareable_link")
+    htmlUrl       String    @map("html_url")
+    createdAt     DateTime  @default(now()) @map("created_at")
+    deletedAt     DateTime? @map("deleted_at")
 
     @@map("repositories")
 }
