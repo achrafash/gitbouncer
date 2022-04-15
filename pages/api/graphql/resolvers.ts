@@ -113,12 +113,15 @@ const resolvers = {
                     /{{\s*action_url\s*}}/g,
                     String(process.env.NEXT_PUBLIC_URI)
                 )
-
-            await sendEmail({
-                recipient: repo.owner.email,
-                subject: `Someone joined ${repo.name}`,
-                body: email,
-            })
+            try {
+                await sendEmail({
+                    recipient: repo.owner.email,
+                    subject: `Someone joined ${repo.name}`,
+                    body: email,
+                })
+            } catch (err) {
+                console.error(err)
+            }
             return true
         },
 
