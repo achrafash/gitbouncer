@@ -3,6 +3,7 @@ import { GraphQLDateTime } from "graphql-iso-date"
 import { generate } from "short-uuid"
 import type { Context } from "./context"
 import { sendEmail } from "utils/email"
+import { readFileSync } from "fs"
 
 const resolvers = {
     Date: GraphQLDateTime,
@@ -75,7 +76,7 @@ const resolvers = {
             const repo = await ctx.db.repository.findUnique({
                 where: { repoId },
                 include: { owner: true },
-            })
+            }) // TODO - select only the required field
             if (!repo) throw Error("Repo Not Found")
 
             // FIXME - handle user already invited
@@ -98,12 +99,25 @@ const resolvers = {
 
             // send email to the owner
             // TODO - format a bit better and add links to joiner profile and repo page
+            const email = readFileSync("emails/invitee-notification.html")
+                .toString()
+                .replaceAll(/{{\s*username\s*}}/g, repo.owner.login)
+                .replaceAll(/{{\s*invitee\s*}}/g, joiner)
+                .replaceAll(
+                    /{{\s*invitee_url\s*}}/g,
+                    `https://github.com/${joiner}`
+                )
+                .replaceAll(/{{\s*repo_fullname\s*}}/g, "AchrafAsh/curated")
+                .replaceAll(/{{\s*repo_url\s*}}/g, repo.htmlUrl)
+                .replaceAll(
+                    /{{\s*action_url\s*}}/g,
+                    String(process.env.NEXT_PUBLIC_URI)
+                )
+
             await sendEmail({
                 recipient: repo.owner.email,
                 subject: `Someone joined ${repo.name}`,
-                body: `Hey ${repo.owner.login},\
-                \n\n${joiner} just joined your private repo ${repo.fullname}.\
-                \n\n\nDon't want to keep sharing this repo? <a href="">Click here to close the gates</a>`,
+                body: email,
             })
             return true
         },

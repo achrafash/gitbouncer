@@ -20,6 +20,7 @@
 *.pem
 dev.db
 dev.sqlite
+maizzle
 
 # debug
 npm-debug.log*

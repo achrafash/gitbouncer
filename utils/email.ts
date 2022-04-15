@@ -18,15 +18,10 @@ interface EmailProps {
 
 export function sendEmail({ recipient, subject, body }: EmailProps) {
     // send mail with defined transport object
-    return new Promise((resolve, reject) => {
-        transporter.sendMail(
-            {
-                from: `"Achraf at Github-Bouncer" <${process.env.MAIL_USER}>`,
-                to: recipient,
-                subject: subject,
-                text: body,
-            },
-            reject
-        )
+    return transporter.sendMail({
+        from: `"Achraf from GitBouncer" <${process.env.MAIL_USER}>`,
+        to: recipient,
+        subject: subject,
+        html: body,
     })
 }
