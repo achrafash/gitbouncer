@@ -23,7 +23,14 @@ const resolvers = {
         ) => {
             const { token } = ctx.req.user
             if (!token) throw Error("Unauthorized")
-            // TODO - verify that token matches ownerId
+
+            let repo = await ctx.db.repository.update({
+                where: { repoId: input.repoId },
+                data: { deletedAt: null },
+            })
+            if (repo) {
+                return repo.shareableLink
+            }
 
             const uuid = generate()
             const link = `${process.env.NEXT_PUBLIC_URI}/share/${uuid}`
@@ -91,10 +98,25 @@ const resolvers = {
             await sendEmail({
                 recipient: repo.owner.email,
                 subject: `Someone joined ${repo.name}`,
-                body: `Hey ${repo.owner.login},\n${joiner} just joined your private repo ${repo.fullname}.\
-                \nDon't want to keep sharing this repo? Click here to close the gates`,
+                body: `Hey ${repo.owner.login},\
+                \n\n${joiner} just joined your private repo ${repo.fullname}.\
+                \n\n\nDon't want to keep sharing this repo? <a href="">Click here to close the gates</a>`,
             })
             return true
+        },
+
+        disableSharing: async (
+            _parent: null,
+            { repoId }: { repoId: number },
+            ctx: Context
+        ) => {
+            console.log({ repoId })
+            const repo = await ctx.db.repository.update({
+                where: { repoId },
+                data: { deletedAt: new Date() },
+            })
+            if (!repo) throw Error("Repo Not Found")
+            return repo
         },
     },
 }

@@ -4,7 +4,7 @@ import Image from "next/image"
 import { withAuthPublic } from "utils/auth"
 import { GitHub as GitHubIcon } from "react-feather"
 import prisma from "utils/db"
-import Error from "next/error"
+import NotFoundPage from "pages/404"
 import { useRouter } from "next/router"
 import Layout from "components/layout"
 
@@ -12,20 +12,21 @@ interface PageProps {
     repo: {
         name: string
         fullname: string
-        owner: string
+        owner: { login: string }
         htmlUrl: string
     }
+    error: string | null
 }
 
-const SharePage: NextPage<PageProps> = ({ repo }) => {
+const SharePage: NextPage<PageProps> = ({ repo, error }) => {
     const router = useRouter()
     const redirectUrl = router.asPath + "/redirect"
 
-    if (repo === null) return <Error statusCode={404} />
+    if (repo === null) return <NotFoundPage />
     return (
         <Layout
-            title={`GitBouncer | ${repo.name} by ${repo.owner}`}
-            description={`Login with your Github account to join ${repo.name} by ${repo.owner}`}
+            title={`GitBouncer | ${repo.name} by ${repo.owner.login}`}
+            description={`Login with your Github account to join ${repo.name} by ${repo.owner.login}`}
         >
             <div className="flex flex-col items-center space-y-4 max-w-2xl mx-auto py-24 px-6">
                 <div className="mb-8">
@@ -38,19 +39,23 @@ const SharePage: NextPage<PageProps> = ({ repo }) => {
                 </div>
 
                 <h3 className="text-xl text-center">
-                    Join <b>{repo.name}</b> by {repo.owner}
+                    Join <b>{repo.name}</b> by {repo.owner.login}
                 </h3>
-                <Link
-                    passHref
-                    href={`/api/auth/login?redirect=${encodeURIComponent(
-                        redirectUrl
-                    )}`}
-                >
-                    <button className="bg-black text-white border border-gray-600 rounded py-2 px-8 flex items-center space-x-4">
-                        <GitHubIcon size={14} />
-                        <span>Login with Github</span>
-                    </button>
-                </Link>
+                {error !== null ? (
+                    <p className="text-lg text-gray-400">{error}</p>
+                ) : (
+                    <Link
+                        passHref
+                        href={`/api/auth/login?redirect=${encodeURIComponent(
+                            redirectUrl
+                        )}`}
+                    >
+                        <button className="bg-black text-white border border-gray-600 rounded py-2 px-8 flex items-center space-x-4">
+                            <GitHubIcon size={14} />
+                            <span>Login with Github</span>
+                        </button>
+                    </Link>
+                )}
             </div>
         </Layout>
     )
@@ -60,18 +65,24 @@ export const getServerSideProps = withAuthPublic(async ({ params }: any) => {
     const { uuid } = params
     const repo = await prisma.repository.findUnique({
         where: { uuid: String(uuid) },
-        include: { owner: true },
+        select: {
+            name: true,
+            fullname: true,
+            htmlUrl: true,
+            deletedAt: true,
+            owner: { select: { login: true } },
+        },
     })
-    if (!repo) return { props: { repo: null } }
-
+    let error: string | null = null
+    if (!repo) return { props: { repo: null, error } }
+    if (repo.deletedAt !== null) {
+        error = "Oops! Too late... The gates are closed 🔒"
+        repo.deletedAt = null
+    }
     return {
         props: {
-            repo: {
-                name: repo.name,
-                fullname: repo.fullname,
-                htmlUrl: repo.htmlUrl,
-                owner: repo.owner.login,
-            },
+            repo,
+            error,
         },
     }
 })

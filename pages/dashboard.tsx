@@ -36,7 +36,7 @@ interface Repo {
     [property: string]: any
 }
 
-const Home: NextPage<PageProps> = ({ user, sharedRepos }) => {
+const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
     const [allRepositories, setAllRepositories] = useState<Repo[]>([])
     const [filteredRepositories, setFilteredRepositories] = useState<Repo[]>([])
 
@@ -95,13 +95,12 @@ const Home: NextPage<PageProps> = ({ user, sharedRepos }) => {
         })
 
         if (foundRepositories.length === 0) {
-            // TODO - use some type of queue to avoid trigger at every keystroke
+            // TODO - throttle requests to avoid stacking calls at every keystroke
             const octokit = new Octokit({ auth: user.token })
             const { data } = await octokit.request("GET /search/repositories", {
                 q: `${query}+in:name+is:private+user:${user.login}`,
             })
             console.log({ data })
-
             foundRepositories = attachLink(data.items)
         }
         setFilteredRepositories(foundRepositories)
@@ -268,6 +267,24 @@ const RepoCard: FC<RepoCardProps> = ({
         setShareableLink(data.link)
     }
 
+    async function disableLinkSharing() {
+        const response = await fetch(`/api/graphql`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "application/json",
+                Authorization: `Bearer ${owner.token}`,
+            },
+            body: JSON.stringify({
+                query: "mutation DisableSharing($repoId: Int!) { disableSharing(repoId: $repoId) { repoId } }",
+                variables: { repoId: id },
+            }),
+        })
+        const { data, errors } = await response.json()
+        console.log({ data, errors })
+        setShareableLink("")
+    }
+
     return (
         <li className="w-full max-w-sm mx-auto flex flex-col border border-gray-600 rounded shadow p-6 bg-black space-y-4 hover:border-gray-400 transition-all">
             <div className="flex justify-between items-start space-x-4">
@@ -281,15 +298,15 @@ const RepoCard: FC<RepoCardProps> = ({
                         className="p-1"
                         title="Create shareable link"
                     >
-                        <UnlockIcon size={16} />
+                        <LockIcon size={16} />
                     </button>
                 ) : (
                     <button
-                        onClick={() => setShareableLink("")}
+                        onClick={disableLinkSharing}
                         className="p-1"
                         title="Stop sharing"
                     >
-                        <LockIcon size={16} />
+                        <UnlockIcon size={16} />
                     </button>
                 )}
             </div>
@@ -312,18 +329,20 @@ const RepoCard: FC<RepoCardProps> = ({
 }
 
 export const getServerSideProps = withAuthPublic(async ({ req }: any) => {
-    const sharedRepos = await prisma.repository.findMany({
-        where: { owner: { token: req.session.user.token } },
+    let sharedRepos = await prisma.repository.findMany({
+        where: {
+            owner: { token: req.session.user.token },
+            deletedAt: null,
+        },
+        select: {
+            repoId: true,
+            shareableLink: true,
+        },
     })
 
     return {
-        props: {
-            sharedRepos: sharedRepos.map((repo) => ({
-                repoId: repo.repoId,
-                shareableLink: repo.shareableLink,
-            })),
-        },
+        props: { sharedRepos },
     }
 })
 
-export default Home
+export default DashboardPage

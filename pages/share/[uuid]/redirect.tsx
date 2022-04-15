@@ -2,7 +2,7 @@ import type { NextPage } from "next"
 import { useRouter } from "next/router"
 import { withAuthPublic } from "utils/auth"
 import prisma from "utils/db"
-import Error from "next/error"
+import NotFoundPage from "pages/404"
 import { useEffect, useState } from "react"
 
 // FIXME - figure out why GraphQL doesn't return success and display the right error message
@@ -45,10 +45,12 @@ const RedirectPage: NextPage<PageProps> = ({ user, repo }) => {
             window.location.href = repo.htmlUrl
             // else setError("Ooops! Something went wrong...")
         }
-        joinRepo()
+        if (user) {
+            joinRepo()
+        }
     })
 
-    if (repo === null || user === null) return <Error statusCode={404} />
+    if (repo === null || user === null) return <NotFoundPage />
 
     return (
         <main className="min-h-screen bg-gray-900 text-gray-100">
