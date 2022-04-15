@@ -6,7 +6,7 @@ import {
     Copy as CopyIcon,
     Check as CheckIcon,
 } from "react-feather"
-import { Spinner } from "components/ui"
+import { Skeleton, Spinner } from "components/ui"
 
 interface RepoItemProps {
     id: number
@@ -138,7 +138,7 @@ const RepoItem: FC<RepoItemProps> = ({
                 {description || ""}
             </p>
             {loading ? (
-                <div className="animate-pulse rounded-lg bg-gray-700 h-5" />
+                <Skeleton className="h-5 rounded-lg" />
             ) : (
                 shareableLink && (
                     <div className="flex">

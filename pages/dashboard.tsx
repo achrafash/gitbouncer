@@ -8,6 +8,7 @@ import { withAuthPublic } from "utils/auth"
 import prisma from "utils/db"
 import Layout from "components/layout"
 import { RepoItem } from "components/repo-item"
+import { Skeleton } from "components/ui"
 
 interface PageProps {
     user: {
@@ -163,19 +164,15 @@ const LoadingItems: FC<{ count: number }> = ({ count }) => {
                     key={el}
                     className="w-full max-w-sm mx-auto border border-gray-600 rounded shadow p-6 bg-black hover:border-gray-400 transition-all"
                 >
-                    <div className="animate-pulse">
-                        <div className="flex justify-between items-start space-x-8 mb-4">
-                            <div className="flex-1 space-y-2">
-                                <div className="bg-gray-700 rounded h-2 w-40" />
-                                <div className="bg-gray-700 rounded h-2 w-32" />
-                            </div>
-                            <div className="bg-gray-700 rounded w-5 h-5" />
+                    <div className="flex justify-between items-start space-x-8 mb-4">
+                        <div className="flex-1">
+                            <Skeleton className="w-40 h-2" />
+                            <Skeleton className="w-32 h-2" />
                         </div>
-                        <div className="space-y-2">
-                            <div className="bg-gray-700 rounded h-2" />
-                            <div className="bg-gray-700 rounded h-2" />
-                            <div className="bg-gray-700 rounded h-2" />
-                        </div>
+                        <Skeleton className="w-5 h-5 rounded-xs" />
+                    </div>
+                    <div className="space-y-2">
+                        <Skeleton count={3} className="h-2" />
                     </div>
                 </li>
             ))}
