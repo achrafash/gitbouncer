@@ -1,5 +1,5 @@
 import Head from "next/head"
-import type { FC } from "react"
+import type { FC, ReactNode } from "react"
 
 interface SEOProps {
     title?: string
@@ -48,6 +48,7 @@ const SEO: FC<SEOProps> = ({ title, description }) => {
 interface LayoutProps {
     title?: string
     description?: string
+    children: ReactNode
 }
 
 const Layout: FC<LayoutProps> = ({ title, description, children }) => (

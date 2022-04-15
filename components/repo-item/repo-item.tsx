@@ -1,4 +1,4 @@
-import type { FC } from "react"
+import type { FC, ReactNode } from "react"
 import { useState, useEffect } from "react"
 import {
     Unlock as UnlockIcon,
@@ -18,7 +18,7 @@ interface RepoItemProps {
     link?: string
 }
 
-const CopyButton: FC = ({ children }) => {
+const CopyButton: FC<{ children: ReactNode }> = ({ children }) => {
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {
