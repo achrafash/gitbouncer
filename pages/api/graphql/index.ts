@@ -9,6 +9,7 @@ const apolloServer = new ApolloServer({
     typeDefs,
     resolvers,
     context: createContext,
+    introspection: true,
 })
 
 export const config = {
