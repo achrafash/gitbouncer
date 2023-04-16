@@ -8,11 +8,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     const { code } = req.query
 
     const auth = createOAuthUserAuth({
-        clientId: String(process.env.GITHUB_CLIENT_ID),
-        clientSecret: String(process.env.GITHUB_CLIENT_SECRET),
+        clientId: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
         code: String(code),
-        state: String(process.env.LOGIN_STATE),
-        redirectUrl: `${String(process.env.NEXT_PUBLIC_URI)}/api/auth/callback`,
+        state: process.env.LOGIN_STATE,
+        redirectUrl: `${process.env.NEXT_PUBLIC_URI}/api/auth/callback`,
     })
 
     // Exchanges the code for the user access token authentication on first call

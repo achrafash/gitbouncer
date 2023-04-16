@@ -106,7 +106,7 @@ const resolvers = {
                         username: repo.owner.login,
                         invitee: joiner,
                         invitee_url: `https://github.com/${joiner}`,
-                        action_url: String(process.env.NEXT_PUBLIC_URI),
+                        action_url: process.env.NEXT_PUBLIC_URI,
                         repo_fullname: repo.fullname,
                         repo_url: repo.htmlUrl,
                     }),
