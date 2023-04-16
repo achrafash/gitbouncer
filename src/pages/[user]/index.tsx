@@ -109,12 +109,12 @@ const DashboardPage: NextPage<PageProps> = ({ user, sharedRepos }) => {
 
     return (
         <Layout title="GitBouncer | Dashboard">
-            <header className="py-4 px-6 border-b border-gray-600 flex flex-col-reverse items-center justify-between md:flex-row md:space-y-0">
+            <header className="py-4 px-6 border-b border-zinc-600 flex flex-col-reverse items-center justify-between md:flex-row md:space-y-0">
                 <SearchBar onChange={filterRepositories} />
 
                 <div className="flex items-center space-x-4 w-fit mb-6 md:m-0">
                     <span className="text-sm">{user.login}</span>
-                    <div className="w-8 h-8 overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-gray-900">
+                    <div className="w-8 h-8 overflow-hidden rounded-full ring-1 ring-zinc-300 ring-offset-2 ring-offset-zinc-800">
                         <Image
                             className="w-full"
                             src={
@@ -204,13 +204,13 @@ const SearchBar: FC<SearchBarProps> = ({ onChange }) => {
 
     return (
         <form
-            className="border border-gray-600 rounded flex-1 w-full flex items-center max-w-sm mx-auto"
+            className="border border-zinc-600 rounded flex-1 w-full flex items-center max-w-sm mx-auto"
             onSubmit={(e) => {
                 e.preventDefault()
             }}
         >
             <div className="py-2 px-4">
-                <SearchIcon size={16} className="text-gray-400" />
+                <SearchIcon size={16} className="text-zinc-400" />
             </div>
             <input
                 ref={ref}
@@ -221,8 +221,8 @@ const SearchBar: FC<SearchBarProps> = ({ onChange }) => {
                 onChange={onChange}
                 className="flex-1 py-2 pr-4 bg-transparent text-sm font-light focus:outline-none"
             />
-            <div className="shadow-inner shadow-gray-400 bg-gray-200 border border-black m-2 px-2 rounded-sm ring-2 ring-offset-gray-900 ring-offset-1">
-                <span className="text-gray-600 text-xs font-bold">/</span>
+            <div className="shadow-inner shadow-zinc-400 bg-zinc-200 border border-black m-2 px-2 rounded-sm ring-1 ring-zinc-600 ring-offset-zinc-800 ring-offset-2">
+                <span className="text-zinc-500 text-xs font-black">/</span>
             </div>
         </form>
     )

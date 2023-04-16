@@ -1,5 +1,6 @@
 import type { FC, ReactNode } from "react"
 import { useState, useEffect } from "react"
+import Link from "next/link"
 import {
     Unlock as UnlockIcon,
     Lock as LockIcon,
@@ -29,13 +30,14 @@ const CopyButton: FC<{ children: ReactNode }> = ({ children }) => {
 
     return (
         <button
-            onClick={() => {
+            onClick={(e) => {
                 navigator.clipboard.writeText(String(children))
                 setCopied(true)
+                e.stopPropagation()
             }}
             disabled={copied}
             title="Copy to clipboard"
-            className="py-1 px-2 bg-gray-600"
+            className="py-1 px-2 bg-zinc-600 rounded-r"
         >
             {copied ? <CheckIcon size={16} /> : <CopyIcon size={16} />}
         </button>
@@ -105,51 +107,64 @@ const RepoItem: FC<RepoItemProps> = ({
     }
 
     return (
-        <li className="w-full max-w-sm mx-auto flex flex-col border border-gray-600 rounded shadow p-6 bg-black space-y-4 hover:border-gray-400 transition-all">
-            <div className="flex justify-between items-start space-x-4">
-                <div className="flex-1">
-                    <h4 className="font-medium text-white">{name}</h4>
-                    <small className="text-gray-400 text-xs">{fullname}</small>
-                </div>
-                {loading ? (
-                    <Spinner />
-                ) : shareableLink === "" ? (
-                    <button
-                        onClick={createLink}
-                        className="p-1"
-                        title="Create shareable link"
-                    >
-                        <LockIcon size={16} />
-                    </button>
-                ) : (
-                    <button
-                        onClick={disableLinkSharing}
-                        className="p-1"
-                        title="Stop sharing"
-                    >
-                        <UnlockIcon size={16} />
-                    </button>
-                )}
-            </div>
-            <p
-                className="flex-1 font-light text-sm line-clamp-3"
-                title={description || ""}
-            >
-                {description || ""}
-            </p>
-            {loading ? (
-                <Skeleton className="h-5 rounded-lg" />
-            ) : (
-                shareableLink && (
-                    <div className="flex">
-                        <div className="w-full border border-gray-600 bg-gray-800 text-sm truncate p-1">
-                            {shareableLink}
-                        </div>
-                        <CopyButton>{shareableLink}</CopyButton>
+        <Link href={fullname} passHref>
+            <li className="cursor-pointer w-full max-w-sm mx-auto flex flex-col border border-zinc-600 rounded shadow p-6 bg-black space-y-4 hover:border-zinc-400 transition-all">
+                <div className="flex justify-between items-start space-x-4">
+                    <div className="flex-1">
+                        <h4 className="font-medium text-white">{name}</h4>
+                        <small className="text-zinc-400 text-xs">
+                            {fullname}
+                        </small>
                     </div>
-                )
-            )}
-        </li>
+
+                    {loading ? (
+                        <Spinner />
+                    ) : shareableLink === "" ? (
+                        <button
+                            onClick={(e) => {
+                                createLink()
+                                e.stopPropagation()
+                            }}
+                            className="p-1"
+                            title="Create shareable link"
+                        >
+                            <LockIcon size={16} />
+                        </button>
+                    ) : (
+                        <button
+                            onClick={(e) => {
+                                disableLinkSharing()
+                                e.stopPropagation()
+                            }}
+                            className="p-1"
+                            title="Stop sharing"
+                        >
+                            <UnlockIcon size={16} />
+                        </button>
+                    )}
+                </div>
+                <p
+                    className="flex-1 font-light text-sm line-clamp-3"
+                    title={description || ""}
+                >
+                    {description || ""}
+                </p>
+                {loading ? (
+                    <Skeleton className="h-5 rounded-lg" />
+                ) : (
+                    shareableLink && (
+                        <div className="flex">
+                            <div className="w-full border rounded-l border-zinc-600 shadow-inner bg-gradient-to-b from-zinc-800 to-zinc-900 truncate py-1 px-2">
+                                <span className="text-xs tracking-wide text-zinc-300">
+                                    {shareableLink}
+                                </span>
+                            </div>
+                            <CopyButton>{shareableLink}</CopyButton>
+                        </div>
+                    )
+                )}
+            </li>
+        </Link>
     )
 }
 

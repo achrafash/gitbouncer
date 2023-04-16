@@ -11,7 +11,7 @@ interface SkeletonProps {
 
 const Skeleton: FC<SkeletonProps> = ({ className = "", count = 1 }) => {
     const baseClass =
-        "bg-gradient-to-r from-slate-900 to-slate-700 rounded animate-pulse mb-2"
+        "bg-gradient-to-r from-zinc-900 to-zinc-700 rounded animate-pulse mb-2"
     return (
         <div>
             {range(count).map((el) => (

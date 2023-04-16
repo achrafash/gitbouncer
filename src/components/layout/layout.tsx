@@ -54,7 +54,7 @@ interface LayoutProps {
 const Layout: FC<LayoutProps> = ({ title, description, children }) => (
     <>
         <SEO title={title} description={description} />
-        <main className="min-h-screen bg-gradient-to-b from-zinc-800 to-black  text-gray-100">
+        <main className="min-h-screen bg-gradient-to-b from-zinc-800 to-black text-zinc-100">
             {children}
         </main>
     </>
