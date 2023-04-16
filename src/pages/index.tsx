@@ -1,15 +1,15 @@
 import type { NextPage } from "next"
 import Image from "next/image"
 import Link from "next/link"
-import { GitHub as GitHubIcon } from "react-feather"
+import { ArrowRight, GitHub as GitHubIcon } from "react-feather"
 import { withAuthPublic } from "utils/auth"
 import Layout from "components/layout"
 
 const LandingPage: NextPage = () => {
     return (
         <Layout title="GitBouncer | Shareable Links for your Private Repos">
-            <div className="max-w-xl mx-auto px-6 py-12 md:py-24 text-center flex flex-col items-center">
-                <div className="mb-12">
+            <div className="max-w-2xl mx-auto px-6 py-10 md:py-24 text-center flex flex-col items-center space-y-10">
+                <div>
                     <Image
                         src="/icon.png"
                         alt="Logo"
@@ -17,28 +17,37 @@ const LandingPage: NextPage = () => {
                         height={140}
                     />
                 </div>
-                <h1 className="text-3xl md:text-4xl font-black mb-6">
-                    Shareable Links for your Private Repos
+                <h1 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-zinc-50 to-zinc-500">
+                    {/* className="font-extrabold text-transparent text-6xl bg-clip-text bg-gradient-to-br from-white to-zinc-500" */}
+                    Shareable Links
+                    <br /> for Private Repos
                 </h1>
-                <div className="text-gray-400">
-                    <p className="mb-2">
-                        Want to share a repo but don&apos;t want to make it
-                        public?
-                    </p>
-                    <p>
-                        Avoid the usual (awkward) back and forth.
-                        <br />
-                        Send them a link. Keep it private 🔐
-                    </p>
-                </div>
 
-                <div className="mt-12">
+                <p className="text-zinc-400 leading-relaxed">
+                    Sharing a private repo is awkward. Not anymore.
+                    <br />
+                    Create a shareable link in one click.
+                    <br />
+                    No need to make your repo public 🔒
+                </p>
+
+                <div>
                     <Link passHref href="/api/auth/login">
-                        <button className="bg-black text-white border border-gray-600 rounded py-2 px-8 flex items-center space-x-4 transition-all hover:border-gray-400">
-                            <GitHubIcon size={14} />
-                            <span>Login with Github</span>
+                        <button className="group bg-black text-zinc-300 hover:text-white border border-zinc-600 rounded-full py-2 px-6 flex items-center transition-all hover:border-zinc-400">
+                            <GitHubIcon size={18} />
+                            <div className="relative bg-black px-4">
+                                <span>Login with Github</span>
+                                <ArrowRight
+                                    size={18}
+                                    className="top-1/2 right-0 -translate-y-1/2 -translate-x-full absolute group-hover:translate-x-2 opacity-0 group-hover:opacity-100 transition-all"
+                                />
+                            </div>
                         </button>
                     </Link>
+                    {/* <div class="text-3xl p-2 group border w-fit grid" style="clip-path: inset(0 0 0 0 );" >
+                        <div class="[grid-area:1/1] flex items-center justify-center h-10 w-10 transition ease-in-out group-hover:delay-300 translate-y-10 -translate-x-10 group-hover:translate-y-0 group-hover:translate-x-0">↗</div>
+                        <div class="[grid-area:1/1] flex items-center justify-center h-10 w-10 transition ease-in-out delay-300 group-hover:delay-[0s] duration-300 group-hover:-translate-y-10 group-hover:translate-x-10">↗</div>
+                    </div> */}
                 </div>
             </div>
         </Layout>
