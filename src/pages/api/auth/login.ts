@@ -11,7 +11,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
             new URLSearchParams({
                 scope: "read:user,user:email,repo",
                 client_id: process.env.GITHUB_CLIENT_ID,
-                redirect_uri: process.env.NEXT_PUBLIC_URI,
+                redirect_uri:
+                    process.env.NEXT_PUBLIC_URI + "/api/auth/callback",
                 state: process.env.LOGIN_STATE,
             })
         if (req.session.user) {
