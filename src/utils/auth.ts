@@ -44,7 +44,7 @@ export const withAuthPublic = (handler?: any, authRequired: boolean = false) =>
             }
 
             if (req.session.user && req.url === "/") {
-                res.setHeader("location", "/dashboard")
+                res.setHeader("location", req.session.user.login)
                 res.statusCode = 302
                 res.end()
                 return { props: {} }

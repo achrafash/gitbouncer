@@ -1,4 +1,4 @@
-import type { NextPage } from "next"
+import type { GetServerSidePropsContext, NextPage } from "next"
 import { FC, ChangeEvent, useRef, useCallback, Fragment } from "react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
@@ -228,38 +228,40 @@ const SearchBar: FC<SearchBarProps> = ({ onChange }) => {
     )
 }
 
-export const getServerSideProps = withAuthPublic(async ({ req, res }: any) => {
-    const user = await prisma.user.findFirst({
-        where: { token: req.session.user.token },
-    })
-    if (!user) {
-        // Trigger authentication
-        res.setHeader("location", "/api/auth/login")
-        res.statusCode = 302
-        res.end()
-        return { props: {} }
+export const getServerSideProps = withAuthPublic(
+    async ({ req, res, params }: any) => {
+        const { user: login } = params as any
+        const user = await prisma.user.findFirst({
+            where: { token: req.session.user.token },
+        })
+        if (!user) {
+            // Trigger authentication
+            res.setHeader("location", "/api/auth/login")
+            res.statusCode = 302
+            res.end()
+            return { props: {} }
+        }
+        if (login !== user.login) {
+            res.setHeader("location", user.login)
+            res.statusCode = 302
+            res.end()
+            return { props: {} }
+        }
+        let sharedRepos = await prisma.repository.findMany({
+            where: {
+                owner: user,
+                deletedAt: null,
+            },
+            select: {
+                repoId: true,
+                shareableLink: true,
+            },
+        })
+
+        return {
+            props: { sharedRepos },
+        }
     }
-
-    // Moving this page to domain/user to match Github's routes
-    res.setHeader("location", user.login)
-    res.statusCode = 302
-    res.end()
-    return { props: {} }
-
-    // let sharedRepos = await prisma.repository.findMany({
-    //     where: {
-    //         owner: user,
-    //         deletedAt: null,
-    //     },
-    //     select: {
-    //         repoId: true,
-    //         shareableLink: true,
-    //     },
-    // })
-
-    // return {
-    //     props: { sharedRepos },
-    // }
-})
+)
 
 export default DashboardPage
